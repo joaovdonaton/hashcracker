@@ -20,6 +20,7 @@ def hash_password(password, hash_type):
         return hashlib.md5(password.encode()).hexdigest()
 
 #detect hash type automatically
+#unsafe
 def detect_hash(hashed_password):
     if len(hashed_password) == 128:
         return 'SHA512'
@@ -97,8 +98,10 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None):
 if len(argv) == 1:
     print(f'''hashcracker.py [type] [hash] [password list] 
 type (AUTO for hash type detection)-> {', '.join(types)}
+(Automatic hash detection is not recommended)
 hash -> hashed password
-password list (leave empty for bruteforce) -> text file containing list of passwords''')
+password list (leave empty for bruteforce) -> text file containing list of passwords
+''')
     exit()
 
 elif len(argv) == 2:
