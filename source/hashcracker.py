@@ -1,6 +1,6 @@
 from sys import argv
 from time import time
-import hashlib
+from hashlib import sha256, sha512, sha384, md5, sha1
 from random import choice
 
 types = ['SHA256', 'SHA512', 'SHA384', 'SHA1', 'MD5']
@@ -9,15 +9,15 @@ bf_range = range(3, 4)
 #function for hashing the passwords to compare against hashed_password
 def hash_password(password, hash_type):
     if hash_type.upper() == 'SHA256':
-        return hashlib.sha256(password.encode()).hexdigest()
+        return sha256(password.encode()).hexdigest()
     elif hash_type.upper() == 'SHA512':
-        return hashlib.sha512(password.encode()).hexdigest()
+        return sha512(password.encode()).hexdigest()
     elif hash_type.upper() == 'SHA384':
-        return hashlib.sha384(password.encode()).hexdigest()
+        return sha384(password.encode()).hexdigest()
     elif hash_type.upper() == 'SHA1':
-        return hashlib.sha1(password.encode()).hexdigest()
+        return sha1(password.encode()).hexdigest()
     elif hash_type.upper() == 'MD5':
-        return hashlib.md5(password.encode()).hexdigest()
+        return md5(password.encode()).hexdigest()
 
 #detect hash type automatically
 #unsafe
@@ -44,7 +44,7 @@ def bruteforce(hashed_password, hash_type, bruteforce_range):
     t0 = time()
     try:
         while True:
-            #generate random string based on 
+            #generate random string based on bruteforce range and chars
             pw = ''.join([choice(chars) for i in range(choice(bruteforce_range))])
             print(pw)
             if hashed_password == hash_password(pw, hash_type):
@@ -94,33 +94,35 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None):
         t1 = time()
         print(f'Password could not be found, tried for: {t1-t0} seconds')
 
-#show the help menu if there are no arguments
-if len(argv) == 1:
-    print(f'''hashcracker.py [type] [hash] [password list] 
+if __name__ == '__main__':
+    #show the help menu if there are no arguments
+    if len(argv) == 1:
+        print(f'''hashcracker.py [type] [hash] [password list] 
 type (AUTO for hash type detection)-> {', '.join(types)}
 (Automatic hash detection is not recommended)
 hash -> hashed password
 password list (leave empty for bruteforce) -> text file containing list of passwords
+(change the value of the variable bf_range in order to change bruteforce range)
 ''')
-    exit()
+        exit()
 
-elif len(argv) == 2:
-    print('Missing required argument: [hash]')
-    exit()
+    elif len(argv) == 2:
+        print('Missing required argument: [hash]')
+        exit()
 
-#check if the type specified in the arguments is valid
-if argv[1] == 'AUTO':
-    argv[1] = detect_hash(argv[2])
-elif argv[1] not in types:
-    print(f'''Invalid type: {argv[1]}
-type must be one of the following:''')
-    print(', '.join(types))
-    exit()
+    #check if the type specified in the arguments is valid
+    if argv[1] == 'AUTO':
+        argv[1] = detect_hash(argv[2])
+    elif argv[1] not in types:
+        print(f'''Invalid type: {argv[1]}
+    type must be one of the following:''')
+        print(', '.join(types))
+        exit()
 
-#check if the password list is present
-#if it's not then enter bruteforce mode
-if len(argv) < 4:
-    bruteforce(argv[2], argv[1], bf_range)
-else:
-    print()
-    crack_hash(argv[1], argv[2], argv[3])
+    #check if the password list is present
+    #if it's not then enter bruteforce mode
+    if len(argv) < 4:
+        bruteforce(argv[2], argv[1], bf_range)
+    else:
+        print()
+        crack_hash(argv[1], argv[2], argv[3])
