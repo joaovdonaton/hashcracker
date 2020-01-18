@@ -3,7 +3,8 @@ from time import time
 import hashlib
 from random import choice
 
-types = ['SHA256', 'SHA512', 'SHA384']
+types = ['SHA256', 'SHA512', 'SHA384', 'SHA1', 'MD5']
+bf_range = range(10, 11)
 
 #function for hashing the passwords to compare against hashed_password
 def hash_password(password, hash_type):
@@ -13,6 +14,10 @@ def hash_password(password, hash_type):
         return hashlib.sha512(password.encode()).hexdigest()
     elif hash_type.upper() == 'SHA384':
         return hashlib.sha384(password.encode()).hexdigest()
+    elif hash_type.upper() == 'SHA1':
+        return hashlib.sha1(password.encode()).hexdigest()
+    elif hash_type.upper() == 'MD5':
+        return hashlib.md5(password.encode()).hexdigest()
 
 #generate random strings and compare them against hashed_password
 def bruteforce(hashed_password, hash_type, bruteforce_range):
@@ -70,8 +75,8 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None):
 
 #show the help menu if there are no arguments
 if len(argv) == 1:
-    print('''hashcracker.py [type] [hash] [password list] 
-type -> SHA256, SHA512, SHA384
+    print(f'''hashcracker.py [type] [hash] [password list] 
+type -> {', '.join(types)}
 hash -> hashed password
 password list (leave empty for bruteforce) -> text file containing list of passwords''')
     exit()
@@ -86,6 +91,6 @@ type must be one of the following:''')
 #check if the password list is present
 #if it's not then enter bruteforce mode
 if len(argv) < 4:
-    bruteforce(argv[2], argv[1], range(3, 4))
+    bruteforce(argv[2], argv[1], bf_range)
 else:
     crack_hash(argv[1], argv[2], argv[3])
