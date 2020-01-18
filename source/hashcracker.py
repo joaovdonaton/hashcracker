@@ -37,7 +37,7 @@ def detect_hash(hashed_password):
         exit()
 
 #generate random strings and compare them against hashed_password
-def bruteforce(hashed_password, hash_type, bruteforce_range):
+def bruteforce(hashed_password, hash_type, bruteforce_range, hashlist=False):
     chars = list('abcdefghijklmnopqrstuvwxyzABCDEFGHJIKLMNOPQRSTUVWXYZ0123456789')
     bruteforce_range = list(bruteforce_range)
 
@@ -60,20 +60,25 @@ def bruteforce(hashed_password, hash_type, bruteforce_range):
         print(f'Password could not be found, tried for: {t1-t0} seconds')
 
 #function for cracking hash with the list of passwords
-def crack_hash(hash_type=None, hashed_password=None, password_list=None):
+def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlist=False):
     if hash_type is None or password_list is None or hashed_password is None:
         print('An unexpected error has occured')
         exit()
 
-    #if the password list doesn't have the file extention
-    #add it.
+    #if the password list or hash list doesn't have the file extention add it.
     if password_list.find('.txt') == -1:
         password_list += '.txt'
+    if hashed_password.find('.txt') == -1 and hashlist:
+        hashed_password += '.txt'
 
-    passwords = []
+    passwords, hashes = [], []
     try:
         with open(password_list, 'r') as pw_list:
-            passwords = pw_list.readlines()  
+            passwords = pw_list.readlines() 
+        if hashlist:
+            with open(hashed_password, 'r') as h_list:
+                hashes = h_list.readlines()
+                hashes = [i.replace('\n', '') for i in hashes]
     except FileNotFoundError:
         print(f'{password_list} doesn\'t exist')
         exit()
@@ -82,15 +87,28 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None):
     #hashed password
     t0 = time()
     try:
-        for pw in passwords:
-            print(pw.replace('\n', ''))
-            if hashed_password == hash_password(pw.replace('\n', ''), hash_type):
-                t1 = time()
-                print(f'password is: {pw}\n password was found in: {t1-t0} seconds')
-                #save the password in a text file then exit
-                with open('result.txt', 'w') as res:
-                    res.write(pw)
-                exit()
+        if not hashlist:
+            for pw in passwords:
+                print(pw.replace('\n', ''))
+                if hashed_password == hash_password(pw.replace('\n', ''), hash_type):
+                    t1 = time()
+                    print(f'password is: {pw}\n password was found in: {t1-t0} seconds')
+                    #save the password in a text file then exit
+                    with open('result.txt', 'w') as res:
+                        res.write(pw)
+                    exit()
+        else:
+            for h in hashes:
+                input(h)
+                for pw in passwords:
+                    print(pw.replace('\n', ''))
+                    if h == hash_password(pw.replace('\n', ''), hash_type):
+                        t1 = time()
+                        print(f'password is: {pw}\n password was found in: {t1-t0} seconds')
+                        #save the password in a text file then exit
+                        with open('result.txt', 'a') as res:
+                            res.write(pw+'\n')
+                        break
     except KeyboardInterrupt:
         t1 = time()
         print(f'Password could not be found, tried for: {t1-t0} seconds')
@@ -107,13 +125,13 @@ if __name__ == '__main__':
     parser.add_argument('-hashlist', help='use list of hashes instead of single hash', action='store_true')
 
     arguments = parser.parse_args()
-    print(arguments)
 
     if arguments.mode[0] == 'bruteforce':
-        bruteforce(arguments.hash[0], arguments.type[0], range(int(arguments.range[0]), int(arguments.range[1])))
+        bruteforce(arguments.hash[0], arguments.type[0], range(int(arguments.range[0]), int(arguments.range[1])),
+        arguments.hashlist)
     elif arguments.mode[0] == 'list':
         if arguments.pwlist is not None:
-            crack_hash(arguments.type[0], arguments.hash[0], arguments.pwlist[0])
+            crack_hash(arguments.type[0], arguments.hash[0], arguments.pwlist[0], arguments.hashlist)
         else:
             print('Missing -pwlist argument')
     else:
