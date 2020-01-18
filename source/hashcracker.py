@@ -2,17 +2,17 @@ from sys import argv
 from time import time
 import hashlib
 
-types = ['SHA256', 'SHA512']
+types = ['SHA256', 'SHA512', 'SHA384']
 
+#function for hashing the passwords to compare against hashed_password
 def hash_password(password, hash_type):
     if hash_type.upper() == 'SHA256':
         return hashlib.sha256(password.encode()).hexdigest()
     elif hash_type.upper() == 'SHA512':
         return hashlib.sha512(password.encode()).hexdigest()
+    elif hash_type.upper() == 'SHA384':
+        return hashlib.sha384(password.encode()).hexdigest()
 
-# sha256senha = hashlib.sha256()
-# sha256senha.update(senha.encode())
-# tentativa = sha256senha.hexdigest()
 #function for cracking hashing with the list of passwords
 def crack_hash(hash_type=None, hashed_password=None, password_list=None):
     if hash_type is None or password_list is None or hashed_password is None:
@@ -32,6 +32,8 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None):
         print(f'{password_list} doesn\'t exist')
         exit()
 
+    #loop through all passwords and compared the hashed versions of them with the 
+    #hashed password
     t0 = time()
     for pw in passwords:
         if hashed_password == hash_password(pw.replace('\n', ''), hash_type):
@@ -42,7 +44,7 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None):
 #show the help menu if there are no arguments
 if len(argv) == 1:
     print('''hashcracker.py [type] [hash] [password list] 
-type -> SHA256, SHA512, bruteforce
+type -> SHA256, SHA512, SHA384
 hash -> hashed password
 password list (leave empty for bruteforce) -> text file containing list of passwords''')
     exit()
