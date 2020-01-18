@@ -41,19 +41,42 @@ def bruteforce(hashed_password, hash_type, bruteforce_range, hashlist=False):
     chars = list('abcdefghijklmnopqrstuvwxyzABCDEFGHJIKLMNOPQRSTUVWXYZ0123456789')
     bruteforce_range = list(bruteforce_range)
 
+    if hashed_password.find('.txt') == -1 and hashlist:
+        hashed_password += '.txt'
+    
+    hashes = []
+    try:
+        if hashlist:
+            with open(hashed_password, 'r') as h_list:
+                hashes = h_list.readlines()
+                hashes = [i.replace('\n', '') for i in hashes]
+        else:
+            hashes.append(hashed_password)
+    except FileNotFoundError:
+        print(f'{hashed_password} doesn\'t exist')
+        exit()
+
     t0 = time()
     try:
-        while True:
-            #generate random string based on bruteforce range and chars
-            pw = ''.join([choice(chars) for i in range(choice(bruteforce_range))])
-            print(pw)
-            if hashed_password == hash_password(pw, hash_type):
-                t1 = time()
-                print(f'password is: {pw}\npassword was found in: {t1-t0} seconds')
-                #save the password in a text file then exit
-                with open('result.txt', 'w') as res:
-                    res.write(pw)
-                exit()
+        for h in hashes:
+            while True:
+                #generate random string based on bruteforce range and chars
+                pw = ''.join([choice(chars) for i in range(choice(bruteforce_range))])
+                print(pw)
+                if h == hash_password(pw, hash_type):
+                    t1 = time()
+                    print(f'password is: {pw}\npassword was found in: {t1-t0} seconds')
+                    if not hashlist:
+                        #save the password in a text file then exit
+                        with open('result.txt', 'w') as res:
+                            res.write(pw)
+                        exit()
+                    else:
+                        #save the password in a text file then exit
+                        with open('result.txt', 'a') as res:
+                            res.write(pw+'\n')
+                            break
+        print(f'All passwords were found in a total of {t1-t0} seconds')
 
     except KeyboardInterrupt:
         t1 = time()
@@ -80,7 +103,7 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlis
                 hashes = h_list.readlines()
                 hashes = [i.replace('\n', '') for i in hashes]
     except FileNotFoundError:
-        print(f'{password_list} doesn\'t exist')
+        print(f'{password_list} or ${hashed_password} doesn\'t exist')
         exit()
 
     #loop through all passwords and compare the hashed versions of them with the 
@@ -104,7 +127,7 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlis
                     if h == hash_password(pw.replace('\n', ''), hash_type):
                         t1 = time()
                         print(f'password is: {pw}\n password was found in: {t1-t0} seconds')
-                        #save the password in a text file then exit
+                        #save the password in a text file then move onto the next hash
                         with open('result.txt', 'a') as res:
                             res.write(pw+'\n')
                         break
