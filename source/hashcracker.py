@@ -13,7 +13,7 @@ def hash_password(password, hash_type):
     elif hash_type.upper() == 'SHA384':
         return hashlib.sha384(password.encode()).hexdigest()
 
-#function for cracking hashing with the list of passwords
+#function for cracking hash with the list of passwords
 def crack_hash(hash_type=None, hashed_password=None, password_list=None):
     if hash_type is None or password_list is None or hashed_password is None:
         print('An unexpected error has occured')
@@ -32,7 +32,7 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None):
         print(f'{password_list} doesn\'t exist')
         exit()
 
-    #loop through all passwords and compared the hashed versions of them with the 
+    #loop through all passwords and compare the hashed versions of them with the 
     #hashed password
     t0 = time()
     for pw in passwords:
