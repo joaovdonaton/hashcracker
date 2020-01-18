@@ -4,7 +4,7 @@ import hashlib
 from random import choice
 
 types = ['SHA256', 'SHA512', 'SHA384', 'SHA1', 'MD5']
-bf_range = range(10, 11)
+bf_range = range(3, 4)
 
 #function for hashing the passwords to compare against hashed_password
 def hash_password(password, hash_type):
@@ -18,6 +18,22 @@ def hash_password(password, hash_type):
         return hashlib.sha1(password.encode()).hexdigest()
     elif hash_type.upper() == 'MD5':
         return hashlib.md5(password.encode()).hexdigest()
+
+#detect hash type automatically
+def detect_hash(hashed_password):
+    if len(hashed_password) == 128:
+        return 'SHA512'
+    elif len(hashed_password) == 96:
+        return 'SHA384'
+    elif len(hashed_password) == 64:
+        return 'SHA256'
+    elif len(hashed_password) == 40:
+        return 'SHA1'
+    elif len(hashed_password) == 32:
+        return 'MD5'
+    else:
+        print('Could not auto detect hash type')
+        exit()
 
 #generate random strings and compare them against hashed_password
 def bruteforce(hashed_password, hash_type, bruteforce_range):
@@ -80,13 +96,19 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None):
 #show the help menu if there are no arguments
 if len(argv) == 1:
     print(f'''hashcracker.py [type] [hash] [password list] 
-type -> {', '.join(types)}
+type (AUTO for hash type detection)-> {', '.join(types)}
 hash -> hashed password
 password list (leave empty for bruteforce) -> text file containing list of passwords''')
     exit()
 
+elif len(argv) == 2:
+    print('Missing required argument: [hash]')
+    exit()
+
 #check if the type specified in the arguments is valid
-if argv[1] not in types:
+if argv[1] == 'AUTO':
+    argv[1] = detect_hash(argv[2])
+elif argv[1] not in types:
     print(f'''Invalid type: {argv[1]}
 type must be one of the following:''')
     print(', '.join(types))
@@ -97,4 +119,5 @@ type must be one of the following:''')
 if len(argv) < 4:
     bruteforce(argv[2], argv[1], bf_range)
 else:
+    print()
     crack_hash(argv[1], argv[2], argv[3])
