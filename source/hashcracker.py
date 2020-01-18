@@ -2,9 +2,9 @@ from sys import argv
 from time import time
 from hashlib import sha256, sha512, sha384, md5, sha1
 from random import choice
+import argparse
 
 types = ['SHA256', 'SHA512', 'SHA384', 'SHA1', 'MD5']
-bf_range = range(3, 4)
 
 #function for hashing the passwords to compare against hashed_password
 def hash_password(password, hash_type):
@@ -83,6 +83,7 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None):
     t0 = time()
     try:
         for pw in passwords:
+            print(pw.replace('\n', ''))
             if hashed_password == hash_password(pw.replace('\n', ''), hash_type):
                 t1 = time()
                 print(f'password is: {pw}\n password was found in: {t1-t0} seconds')
@@ -95,34 +96,24 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None):
         print(f'Password could not be found, tried for: {t1-t0} seconds')
 
 if __name__ == '__main__':
-    #show the help menu if there are no arguments
-    if len(argv) == 1:
-        print(f'''hashcracker.py [type] [hash] [password list] 
-type (AUTO for hash type detection)-> {', '.join(types)}
-(Automatic hash detection is not recommended)
-hash -> hashed password
-password list (leave empty for bruteforce) -> text file containing list of passwords
-(change the value of the variable bf_range in order to change bruteforce range)
-''')
-        exit()
+    #parse arguments with argparse library
+    parser = argparse.ArgumentParser()
+    parser.add_argument('type', nargs=1, help='hash algorithm (SHA512, SHA384, SHA256, SHA1, MD5)')
+    parser.add_argument('hash', nargs=1, help='hashed password (or text file contaning hashes if -hashlist is used)')
+    parser.add_argument('-pwlist', nargs=1, help='list of passwords to compare against hash (required if mode is list)')
+    parser.add_argument('-mode', nargs=1, default=['bruteforce'], help='bruteforce, list')
+    parser.add_argument('-range', nargs=2, help='bruteforce password length range(use space to separate)',
+    default=['8', '11'])
+    parser.add_argument('-hashlist', help='use list of hashes instead of single hash', action='store_false')
 
-    elif len(argv) == 2:
-        print('Missing required argument: [hash]')
-        exit()
+    arguments = parser.parse_args()
 
-    #check if the type specified in the arguments is valid
-    if argv[1] == 'AUTO':
-        argv[1] = detect_hash(argv[2])
-    elif argv[1] not in types:
-        print(f'''Invalid type: {argv[1]}
-    type must be one of the following:''')
-        print(', '.join(types))
-        exit()
-
-    #check if the password list is present
-    #if it's not then enter bruteforce mode
-    if len(argv) < 4:
-        bruteforce(argv[2], argv[1], bf_range)
+    if arguments.mode[0] == 'bruteforce':
+        bruteforce(arguments.hash[0], arguments.type[0], range(int(arguments.range[0]), int(arguments.range[1])))
+    elif arguments.mode[0] == 'list':
+        if arguments.pwlist is not None:
+            crack_hash(arguments.type[0], arguments.hash[0], arguments.pwlist[0])
+        else:
+            print('Missing -pwlist argument')
     else:
-        print()
-        crack_hash(argv[1], argv[2], argv[3])
+        print('Invalid mode')
