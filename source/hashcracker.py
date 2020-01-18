@@ -1,6 +1,7 @@
 from sys import argv
 from time import time
 import hashlib
+from random import choice
 
 types = ['SHA256', 'SHA512', 'SHA384']
 
@@ -12,6 +13,29 @@ def hash_password(password, hash_type):
         return hashlib.sha512(password.encode()).hexdigest()
     elif hash_type.upper() == 'SHA384':
         return hashlib.sha384(password.encode()).hexdigest()
+
+#generate random strings and compare them against hashed_password
+def bruteforce(hashed_password, hash_type, bruteforce_range):
+    chars = list('abcdefghijklmnopqrstuvwxyzABCDEFGHJIKLMNOPQRSTUVWXYZ0123456789')
+    bruteforce_range = list(bruteforce_range)
+
+    t0 = time()
+    try:
+        while True:
+            #generate random string based on 
+            pw = ''.join([choice(chars) for i in range(choice(bruteforce_range))])
+            print(pw)
+            if hashed_password == hash_password(pw, hash_type):
+                t1 = time()
+                print(f'password is: {pw}\npassword was found in: {t1-t0} seconds')
+                #save the password in a text file then exit
+                with open('result.txt', 'w') as res:
+                    res.write(pw)
+                exit()
+
+    except KeyboardInterrupt:
+        t1 = time()
+        print(f'Password could not be found, tried for: {t1-t0} seconds')
 
 #function for cracking hash with the list of passwords
 def crack_hash(hash_type=None, hashed_password=None, password_list=None):
@@ -39,6 +63,9 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None):
         if hashed_password == hash_password(pw.replace('\n', ''), hash_type):
             t1 = time()
             print(f'password is: {pw}\n password was found in: {t1-t0} seconds')
+            #save the password in a text file then exit
+            with open('result.txt', 'w') as res:
+                res.write(pw)
             exit()
 
 #show the help menu if there are no arguments
@@ -59,6 +86,6 @@ type must be one of the following:''')
 #check if the password list is present
 #if it's not then enter bruteforce mode
 if len(argv) < 4:
-    pass
+    bruteforce(argv[2], argv[1], range(3, 4))
 else:
     crack_hash(argv[1], argv[2], argv[3])
