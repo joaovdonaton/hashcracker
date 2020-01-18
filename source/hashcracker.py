@@ -99,7 +99,6 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlis
                     exit()
         else:
             for h in hashes:
-                input(h)
                 for pw in passwords:
                     print(pw.replace('\n', ''))
                     if h == hash_password(pw.replace('\n', ''), hash_type):
