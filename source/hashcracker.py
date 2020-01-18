@@ -64,14 +64,18 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None):
     #loop through all passwords and compare the hashed versions of them with the 
     #hashed password
     t0 = time()
-    for pw in passwords:
-        if hashed_password == hash_password(pw.replace('\n', ''), hash_type):
-            t1 = time()
-            print(f'password is: {pw}\n password was found in: {t1-t0} seconds')
-            #save the password in a text file then exit
-            with open('result.txt', 'w') as res:
-                res.write(pw)
-            exit()
+    try:
+        for pw in passwords:
+            if hashed_password == hash_password(pw.replace('\n', ''), hash_type):
+                t1 = time()
+                print(f'password is: {pw}\n password was found in: {t1-t0} seconds')
+                #save the password in a text file then exit
+                with open('result.txt', 'w') as res:
+                    res.write(pw)
+                exit()
+    except KeyboardInterrupt:
+        t1 = time()
+        print(f'Password could not be found, tried for: {t1-t0} seconds')
 
 #show the help menu if there are no arguments
 if len(argv) == 1:
