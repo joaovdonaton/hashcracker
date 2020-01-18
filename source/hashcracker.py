@@ -104,9 +104,10 @@ if __name__ == '__main__':
     parser.add_argument('-mode', nargs=1, default=['bruteforce'], help='bruteforce, list')
     parser.add_argument('-range', nargs=2, help='bruteforce password length range(use space to separate)',
     default=['8', '11'])
-    parser.add_argument('-hashlist', help='use list of hashes instead of single hash', action='store_false')
+    parser.add_argument('-hashlist', help='use list of hashes instead of single hash', action='store_true')
 
     arguments = parser.parse_args()
+    print(arguments)
 
     if arguments.mode[0] == 'bruteforce':
         bruteforce(arguments.hash[0], arguments.type[0], range(int(arguments.range[0]), int(arguments.range[1])))
