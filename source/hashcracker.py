@@ -20,7 +20,7 @@ def hash_password(password, hash_type):
         return md5(password.encode()).hexdigest()
 
 #detect hash type automatically
-#unsafe
+#unsafe because it's only based on length
 def detect_hash(hashed_password):
     if len(hashed_password) == 128:
         return 'SHA512'
@@ -41,9 +41,11 @@ def bruteforce(hashed_password, hash_type, bruteforce_range, hashlist=False):
     chars = list('abcdefghijklmnopqrstuvwxyzABCDEFGHJIKLMNOPQRSTUVWXYZ0123456789')
     bruteforce_range = list(bruteforce_range)
 
+    #check if the hash list has the correct file extension
     if hashed_password.find('.txt') == -1 and hashlist:
         hashed_password += '.txt'
     
+    #get the hash list from the text file 
     hashes = []
     try:
         if hashlist:
@@ -72,7 +74,7 @@ def bruteforce(hashed_password, hash_type, bruteforce_range, hashlist=False):
                             res.write(pw)
                         exit()
                     else:
-                        #save the password in a text file then exit
+                        #save the password in a text file then move onto the next hash
                         with open('result.txt', 'a') as res:
                             res.write(pw+'\n')
                             break
@@ -82,7 +84,7 @@ def bruteforce(hashed_password, hash_type, bruteforce_range, hashlist=False):
         t1 = time()
         print(f'Password could not be found, tried for: {t1-t0} seconds')
 
-#function for cracking hash with the list of passwords
+#function for cracking a hash with a list of passwords
 def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlist=False):
     if hash_type is None or password_list is None or hashed_password is None:
         print('An unexpected error has occured')
@@ -94,6 +96,7 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlis
     if hashed_password.find('.txt') == -1 and hashlist:
         hashed_password += '.txt'
 
+    #get the password list and the hash list from their respective files
     passwords, hashes = [], []
     try:
         with open(password_list, 'r') as pw_list:
@@ -110,6 +113,7 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlis
     #hashed password
     t0 = time()
     try:
+        #check if a hash list is being used
         if not hashlist:
             for pw in passwords:
                 print(pw.replace('\n', ''))
@@ -148,6 +152,7 @@ if __name__ == '__main__':
 
     arguments = parser.parse_args()
 
+    #check if the mode is bruteforce or list (if it's neither, print an error message)
     if arguments.mode[0] == 'bruteforce':
         bruteforce(arguments.hash[0], arguments.type[0], range(int(arguments.range[0]), int(arguments.range[1])),
         arguments.hashlist)
