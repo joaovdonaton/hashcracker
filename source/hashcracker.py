@@ -1,10 +1,7 @@
-from sys import argv
 from time import time
 from hashlib import sha256, sha512, sha384, md5, sha1
 from random import choice
 import argparse
-
-types = ['SHA256', 'SHA512', 'SHA384', 'SHA1', 'MD5']
 
 #function for hashing the passwords to compare against hashed_password
 def hash_password(password, hash_type):
