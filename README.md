@@ -4,7 +4,7 @@
 <b>Supported hashing algorithms:</b> SHA512, SHA256, SHA384, SHA1, MD5 <br>
 <b>Features:</b> auto detection of hashing algorithm based on length (not recommended), bruteforce, password list <br>
 <b>Arguments:</b> <br>
-_type:_ hash algorithm (must be one of the supported hashing algorithms mentioned above) <br>
+_type:_ hash algorithm (must be one of the supported hashing algorithms mentioned above or AUTO if you want to use automatic algorithm detection) <br>
 _hash:_ can be either the hashed password, or a text file containing a list of hashes to crack (_hashlist_ must be activated if _hash_ is a text file containing multiple hashes) <br>
 _mode:_ list or bruteforce<br>
 _pwlist:_ list of passwords to compare against a single hash or a list of hashes <br>
