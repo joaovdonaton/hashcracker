@@ -3,6 +3,8 @@ from hashlib import sha256, sha512, sha384, md5, sha1
 from random import choice
 import argparse
 
+#Author: Bot (Bot#3939 on discord)
+
 #function for hashing the passwords to compare against hashed_password
 def hash_password(password, hash_type):
     if hash_type.upper() == 'SHA256':
@@ -55,22 +57,23 @@ def bruteforce(hashed_password, hash_type, bruteforce_range, hashlist=False):
         print(f'{hashed_password} doesn\'t exist')
         exit()
 
+    #set detect to true if hash type is AUTO
+    detect = False
+    if hash_type.upper() == 'AUTO':
+        detect = True
+
     try:
-        detect = False
-        if hash_type.upper() == 'AUTO':
-            detect = True
         for h in hashes:
+            #detect hash type automatically for each hash if detect is True
             if detect:
                 hash_type = detect_hash(h)
-                print(hash_type)
             t0 = time()
             print(f'[?] Attempting to crack: {h}')
             while True:
                 #generate random string based on bruteforce range and chars
                 pw = ''.join([choice(chars) for i in range(choice(bruteforce_range))])
                 if h == hash_password(pw, hash_type):
-                    t1 = time()
-                    print(f'[~] password is: {pw}[~] password was found in: {t1-t0} seconds\n')
+                    print(f'[~] password is: {pw}\n[~] password was found in: {time()-t0} seconds\n')
                     if not hashlist:
                         #save the password in a text file then exit
                         with open('result.txt', 'w') as res:
@@ -80,7 +83,7 @@ def bruteforce(hashed_password, hash_type, bruteforce_range, hashlist=False):
                         #save the password in a text file then move onto the next hash
                         with open('result.txt', 'a') as res:
                             res.write(pw+'\n')
-                            break
+                        break
         print(f'All passwords were found')
 
     except KeyboardInterrupt:
@@ -93,8 +96,11 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlis
         print('An unexpected error has occured')
         exit()
     
+    detect = False
     if hash_type.upper() == 'AUTO' and not hashlist:
         hash_type = detect_hash(hashed_password)
+    elif hash_type.upper() == 'AUTO' and hashlist:
+        detect = True
 
     #if the password list or hash list doesn't have the file extention add it.
     if password_list.find('.txt') == -1:
@@ -132,9 +138,6 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlis
                     exit()
             print(f'[!] Failed to crack {hashed_password} with {password_list}\n')
         else:
-            detect = False
-            if hash_type.upper() == 'AUTO':
-                detect = True
             for h in hashes:
                 if detect:
                     hash_type = detect_hash(h)
