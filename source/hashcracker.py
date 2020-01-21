@@ -56,7 +56,13 @@ def bruteforce(hashed_password, hash_type, bruteforce_range, hashlist=False):
         exit()
 
     try:
+        detect = False
+        if hash_type.upper() == 'AUTO':
+            detect = True
         for h in hashes:
+            if detect:
+                hash_type = detect_hash(h)
+                print(hash_type)
             t0 = time()
             print(f'[?] Attempting to crack: {h}')
             while True:
@@ -64,7 +70,7 @@ def bruteforce(hashed_password, hash_type, bruteforce_range, hashlist=False):
                 pw = ''.join([choice(chars) for i in range(choice(bruteforce_range))])
                 if h == hash_password(pw, hash_type):
                     t1 = time()
-                    print(f'[~] password is: {pw}[~] password was found in: {t1-t0} seconds')
+                    print(f'[~] password is: {pw}[~] password was found in: {t1-t0} seconds\n')
                     if not hashlist:
                         #save the password in a text file then exit
                         with open('result.txt', 'w') as res:
@@ -75,17 +81,20 @@ def bruteforce(hashed_password, hash_type, bruteforce_range, hashlist=False):
                         with open('result.txt', 'a') as res:
                             res.write(pw+'\n')
                             break
-        print(f'All passwords were found in a total of {t1-t0} seconds')
+        print(f'All passwords were found')
 
     except KeyboardInterrupt:
         t1 = time()
-        print(f'Password could not be found, tried for: {t1-t0} seconds')
+        print(f'[!] Password could not be found, tried for: {t1-t0} seconds')
 
 #function for cracking a hash with a list of passwords
 def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlist=False):
     if hash_type is None or password_list is None or hashed_password is None:
         print('An unexpected error has occured')
         exit()
+    
+    if hash_type.upper() == 'AUTO' and not hashlist:
+        hash_type = detect_hash(hashed_password)
 
     #if the password list or hash list doesn't have the file extention add it.
     if password_list.find('.txt') == -1:
@@ -123,9 +132,14 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlis
                     exit()
             print(f'[!] Failed to crack {hashed_password} with {password_list}\n')
         else:
+            detect = False
+            if hash_type.upper() == 'AUTO':
+                detect = True
             for h in hashes:
+                if detect:
+                    hash_type = detect_hash(h)
                 t0, result = time(), False
-                print(f'[?] Attempting to crack: {h}')
+                print(f'[?] Attempting to crack: {h}, {hash_type}')
                 for pw in passwords:
                     if h == hash_password(pw.replace('\n', ''), hash_type):
                         t1, result = time(), True
@@ -139,7 +153,7 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlis
                     print(f'[!] Failed to crack {h} with {password_list}\n')
     except KeyboardInterrupt:
         t1 = time()
-        print(f'Password could not be found, tried for: {t1-t0} seconds')
+        print(f'[!] Password could not be found, tried for: {t1-t0} seconds')
 
 if __name__ == '__main__':
     #parse arguments with argparse library
