@@ -10,6 +10,8 @@ _mode:_ list or bruteforce<br>
 _pwlist:_ list of passwords to compare against a single hash or a list of hashes <br>
 _range:_ bruteforce string length range (default: 8-11)<br>
 _hashlist:_ no parameters required for this argument, if hashlist is used, then _hash_ should be a text file with more than 1 hash <br>
+_chars:_ string of characters to pick from to generate random strings for bruteforce (default value is: 
+abcdefghijklmnopqrstuvwxyzABCDEFGHJIKLMNOPQRSTUVWXYZ0123456789)<br>
 
 
 <b>Example:</b> <br>
