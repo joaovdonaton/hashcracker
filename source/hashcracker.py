@@ -36,8 +36,8 @@ def detect_hash(hashed_password):
         exit()
 
 #generate random strings and compare them against hashed_password
-def bruteforce(hashed_password, hash_type, bruteforce_range, hashlist=False):
-    chars = list('abcdefghijklmnopqrstuvwxyzABCDEFGHJIKLMNOPQRSTUVWXYZ0123456789')
+def bruteforce(hashed_password, hash_type, bruteforce_range, charsstr, hashlist=False):
+    chars = list(charsstr)
     bruteforce_range = list(bruteforce_range)
 
     #check if the hash list has the correct file extension
@@ -167,6 +167,8 @@ if __name__ == '__main__':
     parser.add_argument('-mode', nargs=1, default=['bruteforce'], help='bruteforce, list')
     parser.add_argument('-range', nargs=2, help='bruteforce password length range(use space to separate)',
     default=['8', '11'])
+    parser.add_argument('-chars', nargs=1, default=['abcdefghijklmnopqrstuvwxyzABCDEFGHJIKLMNOPQRSTUVWXYZ0123456789'],
+    help='string of characters to pick from when generating random strings for bruteforce')
     parser.add_argument('-hashlist', help='use list of hashes instead of single hash', action='store_true')
 
     arguments = parser.parse_args()
@@ -174,7 +176,7 @@ if __name__ == '__main__':
     #check if the mode is bruteforce or list (if it's neither, print an error message)
     if arguments.mode[0] == 'bruteforce':
         bruteforce(arguments.hash[0], arguments.type[0], range(int(arguments.range[0]), int(arguments.range[1])),
-        arguments.hashlist)
+        arguments.chars[0], arguments.hashlist)
     elif arguments.mode[0] == 'list':
         if arguments.pwlist is not None:
             crack_hash(arguments.type[0], arguments.hash[0], arguments.pwlist[0], arguments.hashlist)
