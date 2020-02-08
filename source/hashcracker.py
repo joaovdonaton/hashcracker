@@ -82,7 +82,7 @@ def bruteforce(hashed_password, hash_type, bruteforce_range, charsstr, hashlist=
                     else:
                         #save the password in a text file then move onto the next hash
                         with open('result.txt', 'a') as res:
-                            res.write(pw+'\n')
+                            res.write(f'{pw} = {h} \n')
                         break
         print(f'All passwords were found')
 
@@ -134,7 +134,7 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlis
                     print(f'[~] password is: {pw}[~] password was found in: {t1-t0} seconds')
                     #save the password in a text file then exit
                     with open('result.txt', 'w') as res:
-                        res.write(pw)
+                        res.write('{0} = {1} \n'.format(pw.replace('\n', ''), hashed_password))
                     exit()
             print(f'[!] Failed to crack {hashed_password} with {password_list}\n')
         else:
@@ -149,7 +149,7 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlis
                         print(f'[~] password is: {pw}[~] password was found in: {t1-t0} seconds\n')
                         #save the password in a text file then move onto the next hash
                         with open('result.txt', 'a') as res:
-                            res.write(pw+'\n')
+                            res.write('{0} = {1} \n'.format(pw.replace('\n', ''), h))
                         break
                 #print fail message if hash is not found
                 if not result:
