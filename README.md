@@ -14,8 +14,19 @@ _chars:_ string of characters to pick from to generate random strings for brutef
 abcdefghijklmnopqrstuvwxyzABCDEFGHJIKLMNOPQRSTUVWXYZ0123456789)<br>
 
 
-<b>Example:</b> <br>
+<b>Examples:</b> <br>
+_Cracking a single hash with a password list:_ <br>
 hashcracker.py SHA256 11a1162b984fef626ecc27c659a8b0eead5248ca867a6a87bea72f8a8706109d -mode list -pwlist passwordlist.txt<br>
+<br>
+_Cracking a single hash with bruteforce:_ <br>
+hashcracker.py SHA256 11a1162b984fef626ecc27c659a8b0eead5248ca867a6a87bea72f8a8706109d -mode bruteforce -range 6 11 -chars abcdefghijklmnopqrstuvwxyz0123456789$#@<br>
+<br>
+_Cracking a list of hashes with a password list:_ <br>
+hashcracker.py MD5 list_of_hashes.txt -mode list -pwlist passwordlist.txt -hashlist <br>
+<br>
+_Cracking a list of hashes with bruteforce:_ <br>
+hashcracker.py MD5 list_of_hashes.txt -mode bruteforce -hashlist -range 6 11 -chars ABCDEFGHJIKLMNOPQRSTUVWXYZ0123456789<br>
+<br>
 
 ![alt text](https://raw.githubusercontent.com/Bot3939/hashcracker/master/imgs/example2.png) <br>
 
