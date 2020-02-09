@@ -65,6 +65,7 @@ def bruteforce(hashed_password, hash_type, bruteforce_range, charsstr, hashlist=
     try:
         for h in hashes:
             #detect hash type automatically for each hash if detect is True
+            #and skip the current hash if hash_type is None
             if detect:
                 hash_type = detect_hash(h)
                 if hash_type == None:
@@ -128,8 +129,9 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlis
     try:
         #check if a hash list is being used
         if not hashlist:
-            t0= time()
+            t0 = time()
             print(f'[?] Attempting to crack: {hashed_password}')
+            #compare all passwords from pwlist to the hash
             for pw in passwords:
                 if hashed_password == hash_password(pw.replace('\n', ''), hash_type):
                     t1 = time()
@@ -138,15 +140,19 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlis
                     with open('result.txt', 'w') as res:
                         res.write('{0} = {1} \n'.format(pw.replace('\n', ''), hashed_password))
                     exit()
+
             print(f'[!] Failed to crack {hashed_password} with {password_list}\n')
         else:
             for h in hashes:
+                #check if auto hash type detection is enabled and skip current hash
+                #if detect_hash fails to detect it
                 if detect:
                     hash_type = detect_hash(h)
                     if hash_type == None:
                         continue
                 t0, result = time(), False
                 print(f'[?] Attempting to crack: {h}, {hash_type}')
+                #compare all passwords from pwlist to the hash
                 for pw in passwords:
                     if h == hash_password(pw.replace('\n', ''), hash_type):
                         t1, result = time(), True
@@ -155,6 +161,7 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlis
                         with open('result.txt', 'a') as res:
                             res.write('{0} = {1} \n'.format(pw.replace('\n', ''), h))
                         break
+
                 #print fail message if hash is not found
                 if not result:
                     print(f'[!] Failed to crack {h} with {password_list}\n')
@@ -182,6 +189,7 @@ if __name__ == '__main__':
         bruteforce(arguments.hash[0], arguments.type[0], range(int(arguments.range[0]), int(arguments.range[1])),
         arguments.chars[0], arguments.hashlist)
     elif arguments.mode[0] == 'list':
+        #check if there's password list (required if the mode is "list") 
         if arguments.pwlist is not None:
             crack_hash(arguments.type[0], arguments.hash[0], arguments.pwlist[0], arguments.hashlist)
         else:
