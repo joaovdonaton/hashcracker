@@ -32,8 +32,8 @@ def detect_hash(hashed_password):
     elif len(hashed_password) == 32:
         return 'MD5'
     else:
-        print('Could not auto detect hash type')
-        exit()
+        print('Could not auto detect hash type\n')
+        return None
 
 #generate random strings and compare them against hashed_password
 def bruteforce(hashed_password, hash_type, bruteforce_range, charsstr, hashlist=False):
@@ -67,6 +67,8 @@ def bruteforce(hashed_password, hash_type, bruteforce_range, charsstr, hashlist=
             #detect hash type automatically for each hash if detect is True
             if detect:
                 hash_type = detect_hash(h)
+                if hash_type == None:
+                    continue
             t0 = time()
             print(f'[?] Attempting to crack: {h}')
             while True:
@@ -141,6 +143,8 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlis
             for h in hashes:
                 if detect:
                     hash_type = detect_hash(h)
+                    if hash_type == None:
+                        continue
                 t0, result = time(), False
                 print(f'[?] Attempting to crack: {h}, {hash_type}')
                 for pw in passwords:
