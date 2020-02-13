@@ -1,7 +1,7 @@
 # hashcracker
 ![alt text](https://raw.githubusercontent.com/Bot3939/hashcracker/master/imgs/usage2.png) <br>
 
-<b>Supported hashing algorithms:</b> SHA512, SHA256, SHA384, SHA1, MD5 <br>
+<b>Supported hashing algorithms:</b> SHA512, SHA256, SHA384, SHA1, MD5, SHA224 <br>
 <b>Features:</b> auto detection of hashing algorithm based on length (not recommended), bruteforce, password list <br>
 <b>Arguments:</b> <br>
 _type:_ hash algorithm (must be one of the supported hashing algorithms mentioned above or AUTO if you want to use automatic algorithm detection) <br>
