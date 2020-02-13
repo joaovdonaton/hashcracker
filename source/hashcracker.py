@@ -1,5 +1,5 @@
 from time import time
-from hashlib import sha256, sha512, sha384, md5, sha1
+from hashlib import sha256, sha512, sha384, md5, sha1, sha224
 from random import choice
 import argparse
 
@@ -17,6 +17,8 @@ def hash_password(password, hash_type):
         return sha1(password.encode()).hexdigest()
     elif hash_type.upper() == 'MD5':
         return md5(password.encode()).hexdigest()
+    elif hash_type.upper() == 'SHA224':
+        return sha224(password.encode()).hexdigest()
 
 #detect hash type automatically
 #unsafe because it's only based on length
@@ -31,6 +33,8 @@ def detect_hash(hashed_password):
         return 'SHA1'
     elif len(hashed_password) == 32:
         return 'MD5'
+    elif len(hashed_password) == 56:
+        return 'SHA224'
     else:
         print('Could not auto detect hash type\n')
         return None
@@ -172,7 +176,7 @@ def crack_hash(hash_type=None, hashed_password=None, password_list=None, hashlis
 if __name__ == '__main__':
     #parse arguments with argparse library
     parser = argparse.ArgumentParser()
-    parser.add_argument('type', nargs=1, help='hash algorithm (SHA512, SHA384, SHA256, SHA1, MD5)')
+    parser.add_argument('type', nargs=1, help='hash algorithm (SHA512, SHA384, SHA256, SHA1, MD5, SHA224)')
     parser.add_argument('hash', nargs=1, help='hashed password (or text file contaning hashes if -hashlist is used)')
     parser.add_argument('-pwlist', nargs=1, help='list of passwords to compare against hash (required if mode is list)')
     parser.add_argument('-mode', nargs=1, default=['bruteforce'], help='bruteforce, list')
