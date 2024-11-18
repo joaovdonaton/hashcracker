@@ -1,4 +1,5 @@
 from sys import path, argv
+
 path.append('../source/')
 from hashcracker import hash_password
 
